@@ -39,7 +39,8 @@ namespace TodoApi
         {
             app.UseErrorHandlingStrategy();
 
-            loggerFactory.AddDebug();
+            loggerFactory
+                .AddDebug();
 
             app.UseMvc();
         }

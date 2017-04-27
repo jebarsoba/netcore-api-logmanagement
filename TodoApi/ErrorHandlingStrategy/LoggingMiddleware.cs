@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace TodoApi.ErrorHandlingStrategy
@@ -18,7 +19,12 @@ namespace TodoApi.ErrorHandlingStrategy
 
         public Task Invoke(HttpContext context)
         {
-            _logger.LogInformation("Logging request.");
+            LoggingMiddlewareLogEntry logEntry = new LoggingMiddlewareLogEntry
+            {
+                Timestamp = DateTime.Now
+            };
+
+            _logger.LogInformation("Request received {0}", logEntry);
 
             // Call the next delegate/middleware in the pipeline
             return this._next(context);
