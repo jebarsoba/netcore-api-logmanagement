@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using TodoApi.ErrorHandlingStrategy;
 using TodoApi.Models;
 
@@ -20,6 +21,10 @@ namespace TodoApi
                 .AddEnvironmentVariables();
 
             Configuration = builder.Build();
+
+            Log.Logger = new LoggerConfiguration()
+                            .WriteTo.RollingFile("log-{Date}.txt")
+                            .CreateLogger();
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -40,7 +45,7 @@ namespace TodoApi
             app.UseErrorHandlingStrategy();
 
             loggerFactory
-                .AddDebug();
+                .AddSerilog();
 
             app.UseMvc();
         }

@@ -24,7 +24,7 @@ namespace TodoApi.ErrorHandlingStrategy
                 Timestamp = DateTime.Now
             };
 
-            _logger.LogInformation("Request received {0}", logEntry);
+            _logger.LogInformation("{@LogEntry}", logEntry);
 
             // Call the next delegate/middleware in the pipeline
             return this._next(context);
