@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace TodoApi.ErrorHandlingStrategy
                 Timestamp = DateTime.Now
             };
 
-            _logger.LogInformation("{@LogEntry}", logEntry);
+            _logger.LogInformation(JsonConvert.SerializeObject(logEntry));
 
             // Call the next delegate/middleware in the pipeline
             return this._next(context);

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Filters;
+using Serilog.Sinks.SumoLogic;
 using TodoApi.ErrorHandlingStrategy;
 using TodoApi.Models;
 
@@ -23,7 +25,11 @@ namespace TodoApi
             Configuration = builder.Build();
 
             Log.Logger = new LoggerConfiguration()
-                            .WriteTo.RollingFile("log-{Date}.txt")
+                            .WriteTo.SumoLogic(
+                                endpointUrl: "[YOUR SUMO COLLECTOR URL]",
+                                outputTemplate: "{Message}"
+                            )
+                            .Filter.ByIncludingOnly(Matching.FromSource<LoggingMiddleware>())
                             .CreateLogger();
         }
 
