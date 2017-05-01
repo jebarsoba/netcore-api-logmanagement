@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +35,8 @@ namespace TodoApi.ErrorHandlingStrategy
                 RequestMethod = context.Request.Method,
                 RequestThreadId = Thread.CurrentThread.ManagedThreadId,
                 RequestIpAddress = this.GetRequestIpAddress(context),
-                RequestContentType = context.Request.ContentType
+                RequestContentType = context.Request.ContentType,
+                RequestContentBody = await this.GetRequestBody(context.Request)
             };
 
             // Call the next delegate/middleware in the pipeline
@@ -45,11 +49,25 @@ namespace TodoApi.ErrorHandlingStrategy
             _logger.LogInformation(JsonConvert.SerializeObject(logEntry));
         }
 
+
         private string GetRequestIpAddress(HttpContext context)
         {
             IHttpConnectionFeature connection = context.Features.Get<IHttpConnectionFeature>();
 
             return connection?.RemoteIpAddress?.ToString();
+        }
+
+        private async Task<string> GetRequestBody(HttpRequest request)
+        {
+            request.EnableRewind();
+
+            byte[] buffer = new byte[Convert.ToInt32(request.ContentLength)];
+            await request.Body.ReadAsync(buffer, 0, buffer.Length);
+            string requestBody = Encoding.UTF8.GetString(buffer);
+
+            request.Body.Seek(0, SeekOrigin.Begin);
+
+            return requestBody;
         }
     }
 }
