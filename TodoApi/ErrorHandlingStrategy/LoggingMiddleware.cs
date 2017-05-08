@@ -26,6 +26,12 @@ namespace TodoApi.ErrorHandlingStrategy
 
         public async Task Invoke(HttpContext context)
         {
+            //Taking a copy of the original response body (to copy it back at the end)
+            var bodyStream = context.Response.Body;
+
+            var responseBodyStream = new MemoryStream();
+            context.Response.Body = responseBodyStream;
+
             Stopwatch stopWatch = Stopwatch.StartNew();
 
             LoggingMiddlewareLogEntry logEntry = new LoggingMiddlewareLogEntry
@@ -46,9 +52,17 @@ namespace TodoApi.ErrorHandlingStrategy
             logEntry.TimeTaken = stopWatch.Elapsed.TotalMilliseconds;
             logEntry.ResponseContentType = context.Response.ContentType;
 
+            //Logging the response body
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            var responseBody = new StreamReader(responseBodyStream).ReadToEnd();
+            logEntry.ResponseContentBody = responseBody;
+
+            //Copying back the original response body
+            responseBodyStream.Seek(0, SeekOrigin.Begin);
+            await responseBodyStream.CopyToAsync(bodyStream);
+
             _logger.LogInformation(JsonConvert.SerializeObject(logEntry));
         }
-
 
         private string GetRequestIpAddress(HttpContext context)
         {
