@@ -1,6 +1,6 @@
 ﻿namespace TodoApi.ErrorHandlingStrategy
 {
-    public class LoggingMiddlewareLogEntry
+    public class LogEntry
     {
         public System.DateTime? Timestamp { get; set; }
         public string User { get; set; }

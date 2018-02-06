@@ -34,7 +34,7 @@ namespace TodoApi.ErrorHandlingStrategy
 
             Stopwatch stopWatch = Stopwatch.StartNew();
 
-            LoggingMiddlewareLogEntry logEntry = new LoggingMiddlewareLogEntry
+            LogEntry logEntry = new LogEntry
             {
                 Timestamp = DateTime.Now,
                 RequestUri = context.Request.Path,
