@@ -39,8 +39,8 @@ namespace TodoApi.ErrorHandlingStrategy
                 Timestamp = DateTime.Now,
                 RequestUri = context.Request.Path,
                 RequestMethod = context.Request.Method,
-                RequestThreadId = Thread.CurrentThread.ManagedThreadId,
                 RequestIpAddress = this.GetRequestIpAddress(context),
+                RequestThreadId = Thread.CurrentThread.ManagedThreadId,
                 RequestContentType = context.Request.ContentType,
                 RequestContentBody = await this.GetRequestBody(context.Request)
             };
@@ -49,7 +49,6 @@ namespace TodoApi.ErrorHandlingStrategy
             await _next.Invoke(context);
 
             logEntry.ResponseStatusCode = context.Response.StatusCode;
-            logEntry.TimeTaken = stopWatch.Elapsed.TotalMilliseconds;
             logEntry.ResponseContentType = context.Response.ContentType;
 
             //Logging the response body
@@ -60,6 +59,8 @@ namespace TodoApi.ErrorHandlingStrategy
             //Copying back the original response body
             responseBodyStream.Seek(0, SeekOrigin.Begin);
             await responseBodyStream.CopyToAsync(bodyStream);
+
+            logEntry.TimeTaken = stopWatch.Elapsed.TotalMilliseconds;
 
             _logger.LogInformation(JsonConvert.SerializeObject(logEntry));
         }
