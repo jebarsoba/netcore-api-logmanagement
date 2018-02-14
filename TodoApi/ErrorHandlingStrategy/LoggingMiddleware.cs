@@ -26,11 +26,11 @@ namespace TodoApi.ErrorHandlingStrategy
 
         public async Task Invoke(HttpContext context)
         {
-            //Taking a copy of the original response body (to copy it back at the end)
-            var bodyStream = context.Response.Body;
+            // Making a back-up of the original response
+            Stream originalResponse = context.Response.Body;
 
-            var responseBodyStream = new MemoryStream();
-            context.Response.Body = responseBodyStream;
+            Stream response = new MemoryStream();
+            context.Response.Body = response;
 
             Stopwatch stopWatch = Stopwatch.StartNew();
 
@@ -45,20 +45,19 @@ namespace TodoApi.ErrorHandlingStrategy
                 RequestContentBody = await this.GetRequestBody(context.Request)
             };
 
-            // Call the next delegate/middleware in the pipeline
+            // Call the next middleware in the pipeline
             await _next.Invoke(context);
 
             logEntry.ResponseStatusCode = context.Response.StatusCode;
             logEntry.ResponseContentType = context.Response.ContentType;
 
-            //Logging the response body
-            responseBodyStream.Seek(0, SeekOrigin.Begin);
-            var responseBody = new StreamReader(responseBodyStream).ReadToEnd();
-            logEntry.ResponseContentBody = responseBody;
+            // Logging the response body
+            response.Seek(0, SeekOrigin.Begin);
+            logEntry.ResponseContentBody = new StreamReader(response).ReadToEnd();
 
-            //Copying back the original response body
-            responseBodyStream.Seek(0, SeekOrigin.Begin);
-            await responseBodyStream.CopyToAsync(bodyStream);
+            // Copying the response back to the original one
+            response.Seek(0, SeekOrigin.Begin);
+            await response.CopyToAsync(originalResponse);
 
             logEntry.TimeTaken = stopWatch.Elapsed.TotalMilliseconds;
 
