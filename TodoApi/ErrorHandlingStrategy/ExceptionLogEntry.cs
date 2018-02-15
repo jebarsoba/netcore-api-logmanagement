@@ -2,7 +2,7 @@
 
 namespace TodoApi.ErrorHandlingStrategy
 {
-    public class ErrorLogEntry
+    public class ExceptionLogEntry
     {
         public DateTime? Timestamp { get; set; }
         public string User { get; set; }
