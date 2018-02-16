@@ -25,6 +25,7 @@ namespace TodoApi
             Configuration = builder.Build();
 
             Log.Logger = new LoggerConfiguration()
+                            .WriteTo.File("C:\\TodoApiLogs.txt")
                             .WriteTo.SumoLogic(
                                 endpointUrl: "[YOUR SUMO COLLECTOR URL]",
                                 outputTemplate: "{Message}"
