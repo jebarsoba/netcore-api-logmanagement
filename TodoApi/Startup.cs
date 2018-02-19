@@ -24,13 +24,16 @@ namespace TodoApi
 
             Configuration = builder.Build();
 
+            var isEventFromLoggingMiddleware = Matching.FromSource<LoggingMiddleware>();
+            var isEventFromExceptionHandlingMiddleware = Matching.FromSource<ExceptionHandlingMiddleware>();
+
             Log.Logger = new LoggerConfiguration()
                             .WriteTo.File("C:\\TodoApiLogs.txt")
                             .WriteTo.SumoLogic(
                                 endpointUrl: "[YOUR SUMO COLLECTOR URL]",
                                 outputTemplate: "{Message}"
                             )
-                            .Filter.ByIncludingOnly(Matching.FromSource<LoggingMiddleware>())
+                            .Filter.ByIncludingOnly(logEvent => isEventFromLoggingMiddleware(logEvent) || isEventFromExceptionHandlingMiddleware(logEvent))
                             .CreateLogger();
         }
 

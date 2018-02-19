@@ -11,14 +11,14 @@ namespace TodoApi.ErrorHandlingStrategy
 {
     public class LoggingMiddleware
     {
-        private readonly RequestDelegate _next;
-        private ILogger<LoggingMiddleware> _logger;
+        private readonly RequestDelegate next;
+        private ILogger<LoggingMiddleware> logger;
 
         public LoggingMiddleware(RequestDelegate next,
         ILogger<LoggingMiddleware> logger)
         {
-            _next = next;
-            _logger = logger;
+            this.next = next;
+            this.logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -43,7 +43,7 @@ namespace TodoApi.ErrorHandlingStrategy
             };
 
             // Call the next middleware in the pipeline
-            await _next.Invoke(context);
+            await this.next.Invoke(context);
 
             logEntry.ResponseStatusCode = context.Response.StatusCode;
             logEntry.ResponseContentType = context.Response.ContentType;
@@ -58,7 +58,7 @@ namespace TodoApi.ErrorHandlingStrategy
 
             logEntry.TimeTaken = stopWatch.Elapsed.TotalMilliseconds;
 
-            _logger.LogInformation(JsonConvert.SerializeObject(logEntry));
+            this.logger.LogInformation(JsonConvert.SerializeObject(logEntry));
         }
     }
 }
