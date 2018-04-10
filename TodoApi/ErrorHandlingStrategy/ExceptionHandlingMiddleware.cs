@@ -37,6 +37,7 @@ namespace TodoApi.ErrorHandlingStrategy
             ExceptionLogEntry errorLogEntry = new ExceptionLogEntry()
             {
                 Timestamp = DateTime.Now,
+                User = RequestHelper.GetUser(context.Request),
                 RequestUri = context.Request.Path,
                 RequestMethod = context.Request.Method,
                 ExceptionType = exception.GetType().ToString(),

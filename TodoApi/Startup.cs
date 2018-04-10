@@ -29,10 +29,10 @@ namespace TodoApi
 
             Log.Logger = new LoggerConfiguration()
                             .WriteTo.File("C:\\TodoApiLogs.txt")
-                            .WriteTo.SumoLogic(
+                            /*.WriteTo.SumoLogic(
                                 endpointUrl: "[YOUR SUMO COLLECTOR URL]",
                                 outputTemplate: "{Message}"
-                            )
+                            )*/
                             .Filter.ByIncludingOnly(logEvent => isEventFromLoggingMiddleware(logEvent) || isEventFromExceptionHandlingMiddleware(logEvent))
                             .CreateLogger();
         }
@@ -45,7 +45,7 @@ namespace TodoApi
             // Add framework services.
             services.AddMvc();
 
-            services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase());
+            services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("demoDatabase"));
             services.AddScoped<ITodoRepository, TodoRepository>();
         }
 

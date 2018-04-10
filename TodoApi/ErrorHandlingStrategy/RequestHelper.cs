@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +30,11 @@ namespace TodoApi.ErrorHandlingStrategy
             request.Body.Seek(0, SeekOrigin.Begin);
 
             return requestBody;
+        }
+
+        public static string GetUser(HttpRequest request)
+        {
+            return request.Headers.TryGetValue("User", out StringValues userHeader) ? userHeader.FirstOrDefault().ToString() : "User header unavailable";
         }
     }
 }

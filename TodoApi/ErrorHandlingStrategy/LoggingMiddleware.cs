@@ -34,6 +34,7 @@ namespace TodoApi.ErrorHandlingStrategy
             LogEntry logEntry = new LogEntry
             {
                 Timestamp = DateTime.Now,
+                User = RequestHelper.GetUser(context.Request),
                 RequestUri = context.Request.Path,
                 RequestMethod = context.Request.Method,
                 RequestIpAddress = RequestHelper.GetIp(context),
