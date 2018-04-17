@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using TodoApi.Models;
 
@@ -8,6 +9,7 @@ namespace TodoApi.Controllers
     public class TodoController : Controller
     {
         private readonly ITodoRepository _todoRepository;
+        private readonly string FORCING_AN_ERROR = "Just forcing an internal error for the demo.";
 
         public TodoController(ITodoRepository todoRepository)
         {
@@ -36,6 +38,9 @@ namespace TodoApi.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] TodoItem item)
         {
+            if (item.Name == FORCING_AN_ERROR)
+                throw new ApplicationException(FORCING_AN_ERROR);
+
             if (item == null)
             {
                 return BadRequest();

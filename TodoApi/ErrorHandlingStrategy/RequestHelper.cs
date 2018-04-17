@@ -19,8 +19,15 @@ namespace TodoApi.ErrorHandlingStrategy
             return connection?.RemoteIpAddress?.ToString();
         }
 
-        public static async Task<string> GetBody(HttpRequest request)
+        public static async Task<string> GetBody(HttpContext context)
         {
+            string cachedRequestBody = (string)context.Items["RequestBody"];
+
+            if (cachedRequestBody != null)
+                return cachedRequestBody;
+
+            var request = context.Request;
+
             request.EnableRewind();
 
             byte[] buffer = new byte[Convert.ToInt32(request.ContentLength)];
@@ -28,6 +35,8 @@ namespace TodoApi.ErrorHandlingStrategy
             string requestBody = Encoding.UTF8.GetString(buffer);
 
             request.Body.Seek(0, SeekOrigin.Begin);
+
+            context.Items["RequestBody"] = requestBody;
 
             return requestBody;
         }

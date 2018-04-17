@@ -12,6 +12,7 @@ namespace TodoApi.ErrorHandlingStrategy
     {
         private readonly RequestDelegate next;
         private readonly ILogger<ExceptionHandlingMiddleware> logger;
+        private readonly int EXCEPTION_MSG_LOG_BYTES_MAX_LENGHT = 1024;
 
         public ExceptionHandlingMiddleware(RequestDelegate next,
         ILogger<ExceptionHandlingMiddleware> logger)
@@ -45,7 +46,7 @@ namespace TodoApi.ErrorHandlingStrategy
                 RequestIpAddress = RequestHelper.GetIp(context),
                 RequestThreadId = Thread.CurrentThread.ManagedThreadId,
                 RequestContentType = context.Request.ContentType,
-                RequestContentBody = await RequestHelper.GetBody(context.Request),
+                RequestContentBody = await RequestHelper.GetBody(context),
                 ExceptionFullMessage = this.GetSanitizedExceptionMessage(exception)
             };
 
@@ -54,12 +55,14 @@ namespace TodoApi.ErrorHandlingStrategy
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            await context.Response.WriteAsync("An internal server error has ocurred. Please contact support@yourCompany.com.");
+            await context.Response.WriteAsync("{ \"ErrorMessage\": \"An internal server error has ocurred. Please contact support@yourCompany.com.\"}");
         }
 
         private string GetSanitizedExceptionMessage(Exception exception)
         {
-            return exception.ToString().Replace("\r\n", ";").Replace("   ", " ");
+            string message = exception.ToString().Replace("\r\n", ";").Replace("   ", " ");
+
+            return message.Length >= EXCEPTION_MSG_LOG_BYTES_MAX_LENGHT ? message.Substring(0, EXCEPTION_MSG_LOG_BYTES_MAX_LENGHT - 1) + "..." : message;
         }
     }
 }

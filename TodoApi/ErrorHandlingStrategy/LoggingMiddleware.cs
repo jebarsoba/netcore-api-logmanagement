@@ -40,7 +40,7 @@ namespace TodoApi.ErrorHandlingStrategy
                 RequestIpAddress = RequestHelper.GetIp(context),
                 RequestThreadId = Thread.CurrentThread.ManagedThreadId,
                 RequestContentType = context.Request.ContentType,
-                RequestContentBody = await RequestHelper.GetBody(context.Request)
+                RequestContentBody = await RequestHelper.GetBody(context)
             };
 
             // Call the next middleware in the pipeline
