@@ -9,7 +9,8 @@ namespace TodoApi.Controllers
     public class TodoController : Controller
     {
         private readonly ITodoRepository _todoRepository;
-        private readonly string FORCING_AN_ERROR = "Just forcing an internal error for the demo.";
+        private readonly string FORCE_ERROR_ALERT = "Force an error alert";
+        private readonly string FORCE_THRESHOLD_ALERT = "Force a threshold alert";
 
         public TodoController(ITodoRepository todoRepository)
         {
@@ -38,8 +39,11 @@ namespace TodoApi.Controllers
         [HttpPost]
         public IActionResult Create([FromBody] TodoItem item)
         {
-            if (item.Name == FORCING_AN_ERROR)
-                throw new ApplicationException(FORCING_AN_ERROR);
+            if (item.Name == FORCE_ERROR_ALERT)
+                throw new ApplicationException(FORCE_ERROR_ALERT);
+
+            if (item.Name == FORCE_THRESHOLD_ALERT)
+                System.Threading.Thread.Sleep(1500);
 
             if (item == null)
             {
